@@ -7,10 +7,10 @@
 using namespace std;
 
 bool parse_params(int argc, char* argv[], string& dict_path, string& word, string& translation,
-                  vector<string> sentence);
-vector<pair<string, string>> open_dictionary(string path);
-void                         save_dictionary(string path, vector<pair<string, string>> dict);
-void                         translate(vector<string>& sentence, vector<pair<string, string>> dict);
+                  vector<string>& sentence);
+vector<pair<string, string>> open_dictionary(const string& path);
+void                         save_dictionary(const string& path, const vector<pair<string, string>>& dict);
+void                         translate(vector<string>& sentence, const vector<pair<string, string>>& dict);
 
 int main(int argc, char* argv[])
 {
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 
     if (!word.empty() && !translation.empty())
     {
-        dict.emplace_back(word, translation);
+        dict.emplace_back(pair<string, string> { word, translation });
 
         if (!dict_path.empty())
         {
@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
 }
 
 bool parse_params(int argc, char* argv[], string& dict_path, string& word, string& translation,
-                  vector<string> sentence)
+                  vector<string>& sentence)
 {
     for (auto i = 1; i < argc; ++i)
     {
-        std::string option = argv[i];
+        string option = argv[i];
 
         if (option == "-d" && (i + 1) < argc)
         {
@@ -78,14 +78,18 @@ bool parse_params(int argc, char* argv[], string& dict_path, string& word, strin
     return true;
 }
 
-vector<pair<string, string>> open_dictionary(string path)
+vector<pair<string, string>> open_dictionary(const string& path)
 {
     vector<pair<string, string>> dict;
 
     fstream file { path, ios_base::in };
 
-    int i = 0;
-    while (file.eof())
+    if (!file.is_open())
+    {
+        cout << "failed to opend dictionary" << endl;
+    }
+
+    while (!file.eof())
     {
         string word;
         file >> word;
@@ -93,15 +97,25 @@ vector<pair<string, string>> open_dictionary(string path)
         string translation;
         file >> translation;
 
-        dict[++i] = pair { word, translation };
+        if (word.empty() || translation.empty())
+        {
+            continue;
+        }
+
+        dict.emplace_back(pair<string, string> { word, translation });
     }
 
     return dict;
 }
 
-void save_dictionary(string path, vector<pair<string, string>> dict)
+void save_dictionary(const string& path, const vector<pair<string, string>>& dict)
 {
     fstream file { path, ios_base::out };
+
+    if (!file.is_open())
+    {
+        cout << "failed to opend dictionary" << endl;
+    }
 
     for (auto word_translation : dict)
     {
@@ -109,21 +123,25 @@ void save_dictionary(string path, vector<pair<string, string>> dict)
     }
 }
 
-void translate(vector<string>& sentence, vector<pair<string, string>> dict)
+void translate(vector<string>& sentence, const vector<pair<string, string>>& dict)
 {
     for (auto word : sentence)
     {
+        auto have_been_translated = false;
         for (auto word_translation : dict)
         {
             if (word == word_translation.first)
             {
                 cout << word_translation.second << " ";
-            }
-            else
-            {
-                cout << "???"
-                     << " ";
+                have_been_translated = true;
             }
         }
+
+        if (!have_been_translated)
+        {
+            cout << "???"
+                 << " ";
+        }
     }
+    cout << endl;
 }
