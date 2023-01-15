@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class Rectangle
 {
@@ -19,3 +20,5 @@ private:
     float        _width;
     static float _default_size;
 };
+
+std::ostream& operator<<(std::ostream& stream, const Rectangle& rectangle);

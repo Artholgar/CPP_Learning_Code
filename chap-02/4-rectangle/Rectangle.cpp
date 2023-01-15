@@ -25,3 +25,8 @@ void Rectangle::scale(float ratio)
     _length *= ratio;
     _width *= ratio;
 }
+
+std::ostream& operator<<(std::ostream& stream, const Rectangle& rectangle)
+{
+    return stream << "{ L: " << rectangle.get_length() << ", W: " << rectangle.get_width() << " }";
+}
