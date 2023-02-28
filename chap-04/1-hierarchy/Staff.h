@@ -1,22 +1,17 @@
 #pragma once
 
+#include "Employee.h"
 #include "Rank.h"
 
 #include <string>
 #include <string_view>
 
-class Staff
+class Employee;
+
+class Staff : public Employee
 {
 public:
     Staff(std::string_view name, std::string_view surname, unsigned int salary);
-
-    const std::string& get_name() const { return _name; }
-    const std::string& get_surname() const { return _surname; }
-
-    unsigned int get_salary() const { return _salary; }
-    void         increase_salary(unsigned int raise);
-
-    Rank get_rank() const { return Rank::Default; }
 
     void receive_task();
     void complete_task();
