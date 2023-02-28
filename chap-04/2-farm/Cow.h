@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-class Cow
+class Cow : public Animal
 {
 public:
     void sing() const { std::cout << "Mewwwwwh" << std::endl; }
